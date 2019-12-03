@@ -16,4 +16,10 @@ const dbConfig: Knex.Config = {
   }
 };
 
-export default Knex(dbConfig);
+const knex = Knex(dbConfig)
+
+knex.on('query', function (queryData) {
+  console.log(queryData.sql)
+})
+
+export default knex;

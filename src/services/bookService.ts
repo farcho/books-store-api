@@ -17,6 +17,7 @@ export async function fetchAll(): Promise<BookDetail[]> {
   logger.log('info', 'Fetching books from database');
 
   const books = await Book.fetchAll();
+  console.log(books.attributes)
   const res = transform(books.serialize(), (book: BookDetail) => ({
     name: book.name,
     author: book.author,
@@ -81,6 +82,15 @@ export async function insert(params: BookPayload): Promise<BookDetail> {
   logger.log('debug', 'Inserted user successfully:', book);
 
   return object.camelize(book);
+}
+
+export async function createDownloadLink(filename: string, id: number) {
+  logger.log('info', 'Creating download link in books table:');
+  const book = (await new Book()
+    .where({ id })
+    .save({ download_link: `http://localhost:3000/file-download?filename=${filename}-${id}` }, { patch: true })).serialize();
+
+  logger.log('debug', 'Inserted link successfully:', book);
 }
 
 /**

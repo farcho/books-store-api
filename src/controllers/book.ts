@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import config from '../config/config';
 import * as bookService from '../services/bookService';
 import BookPayload from '../domain/requests/BookPayload';
+import path from 'path';
 
 const { messages } = config;
 
@@ -79,6 +80,16 @@ export async function createBook(req: Request, res: Response, next: NextFunction
   }
 }
 
+export async function downloadFile(req: Request, res: Response, next: NextFunction) {
+  try {
+    console.log(req.query)
+    const file = path.join(`./uploads/${req.query.filename}.txt`);
+    console.log(file)
+    res.download(file);
+  } catch (error) {
+    next(error)
+  }
+}
 
 
 /**
@@ -88,26 +99,12 @@ export async function createBook(req: Request, res: Response, next: NextFunction
  * @param {Response} res
  * @param {NextFunction} next
  */
-export async function fileUpload(req: Request, res: Response, next: NextFunction) {
+export async function createDownloadLink(filename: string) {
   try {
-
-    console.log('*****'.repeat(50))
-    console.log(req.body)
-
-
-    // const result = await bookService.getBookByAuthorOrName(bookPayload.author, bookPayload.name);
-
-    // console.log(result)
-
-    //const response = await bookService.insert(bookPayload);
-
-    res.status(HttpStatus.OK).json({
-      code: HttpStatus.OK,
-      data: 'OK',
-      message: messages.users.insert
-    });
+    let file = filename.split('-');
+    await bookService.createDownloadLink(file[0], parseInt(file[1]));
   } catch (err) {
-    next(err);
+    console.log(err)
   }
 }
 

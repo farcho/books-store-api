@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import * as validate from './middlewares/validate';
+import { downloadFile } from './middlewares/downloadFile'
 import * as homeController from './controllers/home';
 import * as userController from './controllers/user';
 import * as authController from './controllers/auth';
@@ -17,9 +18,9 @@ var storage = multer.diskStorage({
   destination: function (req: any, file: any, cb: any) {
     cb(null, 'uploads')
   },
-  filename: function (req: any, file: any, cb: any) {
-    console.log(file)
-    cb(null, file.originalname)
+  filename: async function (req: any, file: any, cb: any) {
+    await bookController.createDownloadLink(file.originalname)
+    cb(null, `${file.originalname}.txt`)
   }
 })
 
@@ -46,7 +47,8 @@ router.post('/file-upload', upload.single('file'), (req: any, res: any, next: an
     return next(error)
   }
   res.send(file)
+});
 
-})
+router.post('/file-download', bookController.downloadFile);
 
 export default router;

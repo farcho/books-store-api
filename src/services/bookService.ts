@@ -17,13 +17,12 @@ export async function fetchAll(): Promise<BookDetail[]> {
   logger.log('info', 'Fetching books from database');
 
   const books = await Book.fetchAll();
-  console.log(books.attributes)
   const res = transform(books.serialize(), (book: BookDetail) => ({
     name: book.name,
     author: book.author,
     price: book.price,
     keywords: book.keywords,
-    download_link: book.download_link,
+    downloadLink: book.downloadLink,
     active: book.active,
     updatedAt: new Date(book.updatedAt).toLocaleString(),
     createdAt: new Date(book.updatedAt).toLocaleString()
@@ -37,7 +36,7 @@ export async function fetchAll(): Promise<BookDetail[]> {
 export async function getBookById(bookId: number) {
   logger.log('info', 'Getting book by id from database');
 
-  let book = await new Book().where({ id: bookId }).fetch();
+  const book = await new Book().where({ id: bookId }).fetch();
 
   logger.log('debug', 'Fetched book successfully:', book);
 
@@ -55,7 +54,7 @@ export async function getBookById(bookId: number) {
 export async function getBookByAuthorOrName(author: string, name: string) {
   logger.log('info', 'Getting book by id from database');
 
-  let book = await new Book().query({ where: { author }, orWhere: { name } }).fetch();
+  const book = await new Book().query({ where: { author }, orWhere: { name } }).fetch();
 
   logger.log('debug', 'Fetched book successfully:', book);
 

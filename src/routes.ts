@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import * as validate from './middlewares/validate';
-import { downloadFile } from './middlewares/downloadFile'
 import * as homeController from './controllers/home';
 import * as userController from './controllers/user';
 import * as authController from './controllers/auth';
@@ -11,20 +10,19 @@ import { loginSchema } from './validators/index';
 import { userPOSTSchema } from './validators/userRequest';
 import { bookPOSTSchema } from './validators/bookRequest';
 import validateRefreshToken from './middlewares/validateRefreshToken';
+import multer from 'multer';
 
-var multer = require('multer');
-
-var storage = multer.diskStorage({
-  destination: function (req: any, file: any, cb: any) {
+const storage = multer.diskStorage({
+  destination: (req: any, file: any, cb: any) => {
     cb(null, 'uploads')
   },
-  filename: async function (req: any, file: any, cb: any) {
+  filename: async (req: any, file: any, cb: any) => {
     await bookController.createDownloadLink(file.originalname)
     cb(null, `${file.originalname}.txt`)
   }
 })
 
-var upload = multer({ storage: storage })
+const upload = multer({ storage })
 
 const router: Router = Router();
 
@@ -44,11 +42,12 @@ router.post('/file-upload', upload.single('file'), (req: any, res: any, next: an
   const file = req.file
   if (!file) {
     const error = new Error('Please upload a file')
+
     return next(error)
   }
   res.send(file)
 });
 
-router.post('/file-download', bookController.downloadFile);
+router.get('/file-download', bookController.downloadFile);
 
 export default router;

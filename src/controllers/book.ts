@@ -2,8 +2,10 @@ import * as HttpStatus from 'http-status-codes';
 import { Request, Response, NextFunction } from 'express';
 import config from '../config/config';
 import * as bookService from '../services/bookService';
+import * as wordCountService from '../services/wordCount';
 import BookPayload from '../domain/requests/BookPayload';
 import path from 'path';
+import logger from '../utils/logger';
 
 const { messages } = config;
 
@@ -62,11 +64,7 @@ export async function createBook(req: Request, res: Response, next: NextFunction
   try {
     const bookPayload = req.body as BookPayload;
 
-    console.log('*****'.repeat(50))
-    console.log(bookPayload)
-    const result = await bookService.getBookByAuthorOrName(bookPayload.author, bookPayload.name);
-
-    console.log(result)
+    await bookService.getBookByAuthorOrName(bookPayload.author, bookPayload.name);
 
     const response = await bookService.insert(bookPayload);
 
@@ -82,15 +80,13 @@ export async function createBook(req: Request, res: Response, next: NextFunction
 
 export async function downloadFile(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(req.query)
     const file = path.join(`./uploads/${req.query.filename}.txt`);
-    console.log(file)
+    countWords(file)
     res.download(file);
   } catch (error) {
     next(error)
   }
 }
-
 
 /**
  * Handle /users POST request.
@@ -101,11 +97,20 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
  */
 export async function createDownloadLink(filename: string) {
   try {
-    let file = filename.split('-');
-    await bookService.createDownloadLink(file[0], parseInt(file[1]));
+    const file = filename.split('-');
+    await bookService.createDownloadLink(file[0], parseInt(file[1], 0));
   } catch (err) {
-    console.log(err)
+    logger.log('Error', err.message);
   }
+}
+
+async function countWords(file) {
+  try {
+    const result = await wordCountService.countWords(file);
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 

@@ -19,7 +19,7 @@ export function seed(knex: Knex): Promise<any> {
           price: 1250,
           keywords: 'javascript es6 destructuring functions',
           download_link: 'http://localhost/3000/2'
-        },
+        }
       ])
     ]);
   });

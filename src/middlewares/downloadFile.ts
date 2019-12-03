@@ -12,7 +12,7 @@ export function downloadFile() {
         `attachment; filename=${filename}`
       )
 
-      var fileLocation = path.join('../../uploads', filename);
+      const fileLocation = path.join('../../uploads', filename);
       console.log(fileLocation);
       response.download(fileLocation, filename);
     } catch (error) {

@@ -35,7 +35,7 @@ export async function fetchAll(): Promise<UserDetail[]> {
 export async function getUserByEmail(userEmail: string): Promise<UserDetail> {
   logger.log('info', 'Getting user by email from database');
 
-  let user = await new User().where({ email: userEmail }).fetch();
+  const user = await new User().where({ email: userEmail }).fetch();
 
   logger.log('debug', 'Fetched user successfully:', user);
 

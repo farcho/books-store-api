@@ -39,11 +39,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   try {
     const userPayload = req.body as UserPayload;
 
-    console.log('*****'.repeat(50))
-    console.log(userPayload)
-    const result = await userService.getUserByEmail(userPayload.email);
-
-    console.log(result)
+    await userService.getUserByEmail(userPayload.email);
 
     const response = await userService.insert(userPayload);
 

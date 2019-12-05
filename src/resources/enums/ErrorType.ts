@@ -4,7 +4,7 @@
 enum ErrorType {
   INVALID = 'JsonWebTokenError',
   EXPIRED = 'TokenExpiredError',
-  NO_ROWS_UPDATED_ERROR = 'No Rows Updated',
+  NO_ROWS_UPDATED_ERROR = 'No Rows Updated'
 }
 
 export default ErrorType;

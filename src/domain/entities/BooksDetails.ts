@@ -7,7 +7,7 @@ interface BookDetail {
   author: string;
   price: number;
   keywords: string;
-  download_link: string;
+  downloadLink: string;
   active: boolean;
   createdAt: string;
   updatedAt: string;

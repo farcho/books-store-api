@@ -6,6 +6,7 @@ import BookPayload from '../domain/requests/BookPayload';
 import BookDetail from '../domain/entities/BooksDetails';
 import BadRequestError from '../exceptions/BadRequestError';
 import config from '../config/config';
+import * as constants from '../resources/constants/common'
 
 const { messages } = config;
 /**
@@ -13,16 +14,25 @@ const { messages } = config;
  *
  * @returns {Promise<BookDetail[]>}
  */
-export async function fetchAll(): Promise<BookDetail[]> {
+export async function fetchAll(params: any): Promise<BookDetail[]> {
   logger.log('info', 'Fetching books from database');
 
-  const books = await Book.fetchAll();
+  const books = await new Book()
+    .fetchPage({
+      pageSize: params.limit, // Defaults to 10 if not specified
+      page: params.offset// Passed to Model#fetchAll
+    })
+    .then((results: any) => {
+      return results; // Paginated results object with metadata example below
+    })
+
   const res = transform(books.serialize(), (book: BookDetail) => ({
+    id: book.id,
     name: book.name,
     author: book.author,
     price: book.price,
     keywords: book.keywords,
-    download_link: book.download_link,
+    downloadLink: book.downloadLink,
     active: book.active,
     updatedAt: new Date(book.updatedAt).toLocaleString(),
     createdAt: new Date(book.updatedAt).toLocaleString()
@@ -36,7 +46,7 @@ export async function fetchAll(): Promise<BookDetail[]> {
 export async function getBookById(bookId: number) {
   logger.log('info', 'Getting book by id from database');
 
-  let book = await new Book().where({ id: bookId }).fetch();
+  const book = await new Book({ id: bookId }).fetch();
 
   logger.log('debug', 'Fetched book successfully:', book);
 
@@ -54,7 +64,7 @@ export async function getBookById(bookId: number) {
 export async function getBookByAuthorOrName(author: string, name: string) {
   logger.log('info', 'Getting book by id from database');
 
-  let book = await new Book().query({ where: { author }, orWhere: { name } }).fetch();
+  const book = await new Book().query({ where: { author }, orWhere: { name } }).fetch();
 
   logger.log('debug', 'Fetched book successfully:', book);
 
@@ -65,7 +75,6 @@ export async function getBookByAuthorOrName(author: string, name: string) {
   return book;
 
 }
-
 
 /**
  * Insert book from given book payload
@@ -81,6 +90,49 @@ export async function insert(params: BookPayload): Promise<BookDetail> {
   logger.log('debug', 'Inserted user successfully:', book);
 
   return object.camelize(book);
+}
+
+
+export async function createDownloadLink(filename: string, id: number) {
+  logger.log('info', 'Creating download link in books table:');
+  const book = (await new Book()
+    .where({ id })
+    .save({
+      download_link: `${constants.baseDownloadLink}${filename}-${id}`,
+    }, { patch: true })).serialize();
+
+  logger.log('debug', 'Inserted link successfully:', book);
+  return object.camelize(book);
+}
+
+
+export async function setBookKeyWords(keyWords: any, bookId: number) {
+  logger.log('info', 'Setting keywords in books table:');
+  const book = (await new Book()
+    .where({ id: bookId })
+    .save({
+      keywords: keyWords,
+    }, { patch: true })).serialize();
+
+  logger.log('debug', 'Inserted link successfully:', book);
+  return object.camelize(book);
+}
+
+export async function changeBookStatus(id: number, status: boolean) {
+  logger.log('info', 'Changing book status in books table:');
+  const book = (await new Book()
+    .where({ id })
+    .save({
+      active: status,
+    }, { patch: true })).serialize();
+
+  logger.log('debug', 'Book status updated successfully:', book);
+  return object.camelize(book);
+}
+
+
+export async function countBooks(): Promise<any> {
+  return await new Book().count();
 }
 
 /**

@@ -3,6 +3,7 @@ import bookshelf from '../config/bookshelf';
 import Table from '../resources/enums/Table';
 
 class Book extends bookshelf.Model<Book> {
+  fetchPage: any;
   get requireFetch() {
     return false;
   }

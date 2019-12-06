@@ -16,7 +16,7 @@ const dbConfig: Knex.Config = {
   }
 };
 
-const knex = Knex(dbConfig)
+const knex = Knex(dbConfig);
 
 knex.on('query', function (queryData) {
   console.log(queryData.sql)

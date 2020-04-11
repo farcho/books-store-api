@@ -11,6 +11,7 @@ export function up(knex: Knex): Promise<any> {
       .notNullable()
       .unique();
     table.string('password').notNullable();
+    table.boolean('active').defaultTo(true);
     table
       .integer('role_id')
       .unsigned()

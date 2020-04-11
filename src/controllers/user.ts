@@ -14,13 +14,26 @@ const { messages } = config;
  * @param {Response} res
  * @param {NextFunction} next
  */
-export async function index(_: Request, res: Response, next: NextFunction) {
+export async function index(req: Request, res: Response, next: NextFunction) {
   try {
-    const response = await userService.fetchAll();
+
+    const { offset } = req.query
+
+    const response = await userService.fetchAll(
+      {
+        offset,
+        limit: res.locals.limit,
+        pageSize: res.locals.pageCount
+      }
+    );
 
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
-      data: response,
+      data: {
+        users: response,
+        pageCount: res.locals.pageCount,
+        recordsCount: res.locals.recordsCount,
+      },
       message: messages.users.fetchAll
     });
   } catch (err) {
@@ -50,5 +63,19 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     });
   } catch (err) {
     next(err);
+  }
+}
+
+export async function changeUserStatus(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id, status } = req.body;
+    const response = await userService.changeUserStatus(id, status);
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data: response,
+      message: messages.users.setStatus
+    });
+  } catch (error) {
+    next(error)
   }
 }

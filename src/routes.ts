@@ -7,6 +7,7 @@ import * as authController from './controllers/auth';
 import * as bookController from './controllers/book';
 import authenticate from './middlewares/authenticate';
 import booksPagination from './middlewares/booksPagination';
+import usersPagination from './middlewares/usersPagination';
 import { loginSchema } from './validators/index';
 import { userPOSTSchema } from './validators/userRequest';
 import { bookPOSTSchema } from './validators/bookRequest';
@@ -32,16 +33,17 @@ router.post('/login', validate.schema(loginSchema), authController.login);
 router.post('/refresh', validateRefreshToken, authController.refresh);
 router.post('/logout', validateRefreshToken, authController.logout);
 
-router.get('/users', authenticate, userController.index);
+router.get('/users', authenticate, usersPagination, userController.index);
 router.post('/users', validate.schema(userPOSTSchema), userController.register);
+router.patch('/users/change-status', authenticate, userController.changeUserStatus)
 
 router.get('/books', authenticate, booksPagination, bookController.index);
 router.post('/books', validate.schema(bookPOSTSchema), bookController.createBook);
-router.patch('/books/change-status', bookController.changeBookStatus)
-router.put('/books/set-book-keywords', bookController.setBookKeyWords)
+router.patch('/books/change-status', authenticate, bookController.changeBookStatus)
+router.put('/books/set-book-keywords', authenticate, bookController.setBookKeyWords)
 
 
-router.post('/books/file-upload', upload.single('file'), async (req: any, res: any, next: any) => {
+router.post('/books/file-upload', authenticate, upload.single('file'), async (req: any, res: any, next: any) => {
   const file = req.file
   if (!file) {
     const error = new Error('Please upload a file')
@@ -52,6 +54,6 @@ router.post('/books/file-upload', upload.single('file'), async (req: any, res: a
   res.send(file)
 });
 
-router.get('/file-download', bookController.downloadFile);
+router.get('/file-download', authenticate, bookController.downloadFile);
 
 export default router;

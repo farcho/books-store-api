@@ -24,7 +24,7 @@ export async function login(loginPayload: LoginPayload) {
   logger.log('info', 'Checking email: %s', email);
   const user = await new User({ email }).fetch();
 
-  if (user) {
+  if (user.attributes.active) {
     logger.log('debug', 'Login: Fetched user by email -', user.attributes);
     logger.log('debug', 'Login: Comparing password');
 

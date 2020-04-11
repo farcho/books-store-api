@@ -21,12 +21,11 @@ export async function fetchAll(params: any): Promise<UserDetail[]> {
   const users = await new User()
     .fetchPage({
       pageSize: params.limit, // Defaults to 10 if not specified
-      page: params.offset// Passed to Model#fetchAll
+      page: params.offset // Passed to Model#fetchAll
     })
     .then((results: any) => {
       return results; // Paginated results object with metadata example below
-    })
-
+    });
 
   const res = transform(users.serialize(), (user: UserDetail) => ({
     id: user.id,
@@ -54,8 +53,7 @@ export async function getUserByEmail(userEmail: string): Promise<UserDetail> {
     throw new BadRequestError(messages.users.userExists);
   }
 
-  return user
-
+  return user;
 }
 
 /**
@@ -77,13 +75,17 @@ export async function insert(params: UserPayload): Promise<UserDetail> {
 
 export async function changeUserStatus(id: number, status: boolean) {
   logger.log('info', 'Changing user status in users table:');
-  const user = (await new User()
-    .where({ id })
-    .save({
-      active: status,
-    }, { patch: true })).serialize();
+  const user = (
+    await new User().where({ id }).save(
+      {
+        active: status
+      },
+      { patch: true }
+    )
+  ).serialize();
 
   logger.log('debug', 'User status updated successfully:', user);
+
   return object.camelize(user);
 }
 

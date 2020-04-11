@@ -23,7 +23,6 @@ const tokenErrorMessageMap: any = {
  */
 async function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(req.headers.authorization)
     res.locals.accessToken = String(req.headers.authorization).replace('Bearer ', '');
 
     if (!req.headers.authorization || !res.locals.accessToken) {

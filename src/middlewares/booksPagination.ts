@@ -11,21 +11,20 @@ import * as bookService from '../services/bookService';
  */
 async function booksPagination(req: Request, res: Response, next: NextFunction) {
   try {
-    const { limit } = req.query;
+    const limit: any = req.query.limit;
 
     const recordsCount = await bookService.countBooks();
 
     const pageCount = limit === 0 ? 0 : Math.ceil(recordsCount / limit);
 
     res.locals.pageCount = pageCount;
-    res.locals.recordsCount = parseInt(recordsCount);
+    res.locals.recordsCount = parseInt(recordsCount, 1);
     res.locals.limit = limit;
 
     next();
   } catch (error) {
     next(error);
   }
-
 }
 
 export default booksPagination;

@@ -16,23 +16,20 @@ const { messages } = config;
  */
 export async function index(req: Request, res: Response, next: NextFunction) {
   try {
+    const { offset } = req.query;
 
-    const { offset } = req.query
-
-    const response = await userService.fetchAll(
-      {
-        offset,
-        limit: res.locals.limit,
-        pageSize: res.locals.pageCount
-      }
-    );
+    const response = await userService.fetchAll({
+      offset,
+      limit: res.locals.limit,
+      pageSize: res.locals.pageCount
+    });
 
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       data: {
         users: response,
         pageCount: res.locals.pageCount,
-        recordsCount: res.locals.recordsCount,
+        recordsCount: res.locals.recordsCount
       },
       message: messages.users.fetchAll
     });
@@ -76,6 +73,6 @@ export async function changeUserStatus(req: Request, res: Response, next: NextFu
       message: messages.users.setStatus
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 }

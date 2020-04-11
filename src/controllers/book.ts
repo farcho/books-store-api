@@ -18,21 +18,19 @@ const { messages } = config;
  */
 export async function index(req: Request, res: Response, next: NextFunction) {
   try {
-    const { offset } = req.query
-    const response = await bookService.fetchAll(
-      {
-        offset,
-        limit: res.locals.limit,
-        pageSize: res.locals.pageCount
-      }
-    );
+    const { offset } = req.query;
+    const response = await bookService.fetchAll({
+      offset,
+      limit: res.locals.limit,
+      pageSize: res.locals.pageCount
+    });
 
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       data: {
         books: response,
         pageCount: res.locals.pageCount,
-        recordsCount: res.locals.recordsCount,
+        recordsCount: res.locals.recordsCount
       },
       message: messages.books.fetchAll
     });
@@ -94,7 +92,7 @@ export async function downloadFile(req: Request, res: Response, next: NextFuncti
     const file = path.join(`./uploads/${req.query.filename}.txt`);
     res.download(file);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
@@ -119,10 +117,10 @@ export async function setBookKeyWords(req: Request, res: Response, next: NextFun
     const { filename, book_id: id } = req.body;
     const file = path.join(`./uploads/${filename}`);
     const keyWords = await wordCountService.getBookKeyWords(file);
-    const result = await bookService.setBookKeyWords(keyWords, id)
-    res.send(result)
+    const result = await bookService.setBookKeyWords(keyWords, id);
+    res.send(result);
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
 
@@ -136,8 +134,6 @@ export async function changeBookStatus(req: Request, res: Response, next: NextFu
       message: messages.books.setStatus
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
-
-

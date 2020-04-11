@@ -18,8 +18,8 @@ const dbConfig: Knex.Config = {
 
 const knex = Knex(dbConfig);
 
-knex.on('query', function (queryData) {
-  console.log(queryData.sql)
-})
+// knex.on('query', (queryData) => {
+//   console.log(queryData.sql)
+// })
 
 export default knex;

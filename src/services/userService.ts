@@ -15,14 +15,25 @@ const { messages } = config;
  *
  * @returns {Promise<UserDetail[]>}
  */
-export async function fetchAll(): Promise<UserDetail[]> {
+export async function fetchAll(params: any): Promise<UserDetail[]> {
   logger.log('info', 'Fetching users from database');
 
-  const users = await User.fetchAll();
+  const users = await new User()
+    .fetchPage({
+      pageSize: params.limit, // Defaults to 10 if not specified
+      page: params.offset// Passed to Model#fetchAll
+    })
+    .then((results: any) => {
+      return results; // Paginated results object with metadata example below
+    })
+
+
   const res = transform(users.serialize(), (user: UserDetail) => ({
+    id: user.id,
     name: user.name,
     email: user.email,
     roleId: user.roleId,
+    active: user.active,
     updatedAt: new Date(user.updatedAt).toLocaleString(),
     createdAt: new Date(user.updatedAt).toLocaleString()
   }));
@@ -62,4 +73,20 @@ export async function insert(params: UserPayload): Promise<UserDetail> {
   logger.log('debug', 'Inserted user successfully:', user);
 
   return object.camelize(user);
+}
+
+export async function changeUserStatus(id: number, status: boolean) {
+  logger.log('info', 'Changing user status in users table:');
+  const user = (await new User()
+    .where({ id })
+    .save({
+      active: status,
+    }, { patch: true })).serialize();
+
+  logger.log('debug', 'User status updated successfully:', user);
+  return object.camelize(user);
+}
+
+export async function countBooks(): Promise<any> {
+  return await new User().count();
 }

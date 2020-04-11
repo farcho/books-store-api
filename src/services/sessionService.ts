@@ -35,9 +35,9 @@ export async function remove(token: string): Promise<UserSessionDetail> {
   try {
     logger.log('info', 'User Session: Deactivating token - %s', token);
 
-    const session = (await new UserSession()
-      .where({ token, is_active: true })
-      .save({ isActive: false }, { patch: true })).serialize();
+    const session = (
+      await new UserSession().where({ token, is_active: true }).save({ isActive: false }, { patch: true })
+    ).serialize();
 
     logger.log('debug', 'User Session: Deactivated session -', session);
 

@@ -11,7 +11,7 @@ import * as userService from '../services/userService';
  */
 async function usersPagination(req: Request, res: Response, next: NextFunction) {
   try {
-    const limit: number = req.query.limit;
+    const limit: any = req.query.limit;
 
     const recordsCount = await userService.countBooks();
 

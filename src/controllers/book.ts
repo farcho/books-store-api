@@ -48,7 +48,7 @@ export async function index(req: Request, res: Response, next: NextFunction) {
  */
 export async function getBook(req: Request, res: Response, next: NextFunction) {
   try {
-    const bookId = req.query.id;
+    const bookId: any = req.query.id;
 
     const response = await bookService.getBookById(bookId);
 

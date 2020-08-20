@@ -59,7 +59,7 @@
     "@types/line-reader": "0.0.28",
     "@types/multer": "^1.4.2",
     "@types/n-readlines": "^1.0.0",
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "bookshelf": "^1.1.1",
     "bookshelf-case-converter-plugin": "^1.0.0",
